@@ -1,0 +1,36 @@
+{
+  "name": "staking",
+  "version": "1.0.0",
+  "description": "Users stake different quantities of ERC-20 token named “TKN”. Rewards are proportionally distributed based on staked TKN.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx hardhat coverage",
+    "start": "node scripts/sample-script.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edrygka/stakingContract.git"
+  },
+  "keywords": [
+    "staking",
+    "erc20"
+  ],
+  "author": "Eduard",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/edrygka/stakingContract/issues"
+  },
+  "homepage": "https://github.com/edrygka/stakingContract#readme",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "chai": "^4.3.4",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.5.1",
+    "hardhat": "^2.6.7",
+    "solidity-coverage": "^0.7.17"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.3.2"
+  }
+}
