@@ -24,7 +24,10 @@ contract Staking is Ownable {
 
     StakeHolder[] internal stakeHolders;
     mapping(address => uint) internal So;
-    // TODO: add events
+
+    event Stake(address indexed sender, uint stake);
+    event Unstake(address indexed staker, uint amount);
+    event Distribute(uint indexed amount);
 
     constructor(address tokenAddress) {
         stakingToken = IERC20(tokenAddress);
@@ -56,6 +59,7 @@ contract Staking is Ownable {
         So[msg.sender] = rewardToBeDistributed;
         allActiveStakes += amount;
         stakingToken.transferFrom(msg.sender, address(this), amount);
+        emit Stake(msg.sender, amount);
     }
     
     function calculateReward(StakeHolder memory stakeHolder) internal view returns (uint) {
@@ -78,6 +82,7 @@ contract Staking is Ownable {
 
         rewardToBeDistributed += reward * decimals / allActiveStakes; // multiply by decimals to not to lose decimals
         stakingToken.transferFrom(msg.sender, address(this), reward);
+        emit Distribute(reward);
     }
 
     function unstake() public {
@@ -89,5 +94,6 @@ contract Staking is Ownable {
         uint amount = calculateReward(holder);
         holder._stake = 0;
         stakingToken.transfer(msg.sender, amount);
+        emit Unstake(msg.sender, amount);
     }
 }
