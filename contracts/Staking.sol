@@ -31,7 +31,7 @@ contract Staking is Ownable {
         stakeHolders.push(); // get rid of zero index
     }
 
-    function getStakeHolder(address _address) private view returns (uint) {
+    function getStakeHolderIndex(address _address) private view returns (uint) {
         for (uint i = 1; i < stakeHolders.length; i += 1){
             if (_address == stakeHolders[i]._address) {
                 return i;
@@ -41,8 +41,18 @@ contract Staking is Ownable {
     }
 
     function stake(uint amount) public {
-        require(getStakeHolder(msg.sender) == 0, 'Staker already exist');
-        stakeHolders.push(StakeHolder(msg.sender, amount));
+        uint index = getStakeHolderIndex(msg.sender);
+        bool holderNotExist = index == 0;
+        bool zeroHolderAlreadyExist = (index != 0 && stakeHolders[index]._stake == 0);
+        require(holderNotExist || zeroHolderAlreadyExist, 'Staker already exist');
+
+        if (holderNotExist) {
+            stakeHolders.push(StakeHolder(msg.sender, amount));
+        }
+        if (zeroHolderAlreadyExist) {
+            stakeHolders[index]._stake = amount;
+        }
+        
         So[msg.sender] = rewardToBeDistributed;
         allActiveStakes += amount;
         stakingToken.transferFrom(msg.sender, address(this), amount);
@@ -65,13 +75,16 @@ contract Staking is Ownable {
 
     function distribute(uint reward) onlyOwner public {
         require(allActiveStakes != 0, 'You need at least one ');
+
         rewardToBeDistributed += reward * decimals / allActiveStakes; // multiply by decimals to not to lose decimals
         stakingToken.transferFrom(msg.sender, address(this), reward);
     }
 
-    // TODO: think about do we need remove stake holder from storage to let them make stakes again
     function unstake() public {
-        StakeHolder storage holder = stakeHolders[getStakeHolder(msg.sender)];
+        uint index = getStakeHolderIndex(msg.sender);
+        StakeHolder storage holder = stakeHolders[index];
+        require(holder._stake != 0, 'Nothing to unstake');
+
         allActiveStakes -= holder._stake;
         uint amount = calculateReward(holder);
         holder._stake = 0;
