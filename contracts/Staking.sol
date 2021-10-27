@@ -57,6 +57,7 @@ contract Staking is Ownable {
      * If user already stake some tokens he can't stake again
      */
     function stake(uint amount) public {
+        require(amount != 0, 'Amount should be not zero');
         uint index = getStakeHolderIndex(msg.sender);
         bool holderNotExist = index == 0;
         bool zeroHolderAlreadyExist = (index != 0 && stakeHolders[index]._stake == 0);
@@ -113,6 +114,7 @@ contract Staking is Ownable {
      */
     function unstake() public {
         uint index = getStakeHolderIndex(msg.sender);
+        require(index != 0, 'Staker not exist');
         StakeHolder storage holder = stakeHolders[index];
         require(holder._stake != 0, 'Nothing to unstake');
 
